@@ -1,107 +1,107 @@
-export const EVENTS = {
-  GAME: {
-    STATUS: "game:status",
-    SUCCESS_ROOM: "game:successRoom",
-    SUCCESS_JOIN: "game:successJoin",
-    TOTAL_PLAYERS: "game:totalPlayers",
-    ERROR_MESSAGE: "game:errorMessage",
-    START_COOLDOWN: "game:startCooldown",
-    COOLDOWN: "game:cooldown",
-    RESET: "game:reset",
-    UPDATE_QUESTION: "game:updateQuestion",
-    PLAYER_ANSWER: "game:playerAnswer",
-    CREATE: "game:create",
+import { EVENTS } from "@rahoot/common/constants"
+import Answers from "@rahoot/web/features/game/components/states/Answers"
+import Leaderboard from "@rahoot/web/features/game/components/states/Leaderboard"
+import PlayerFinished from "@rahoot/web/features/game/components/states/PlayerFinished"
+import Podium from "@rahoot/web/features/game/components/states/Podium"
+import Prepared from "@rahoot/web/features/game/components/states/Prepared"
+import Question from "@rahoot/web/features/game/components/states/Question"
+import Responses from "@rahoot/web/features/game/components/states/Responses"
+import Result from "@rahoot/web/features/game/components/states/Result"
+import Room from "@rahoot/web/features/game/components/states/Room"
+import SetTeamName from "@rahoot/web/features/game/components/states/SetTeamName"
+import Start from "@rahoot/web/features/game/components/states/Start"
+import Wait from "@rahoot/web/features/game/components/states/Wait"
+import WaitTeamName from "@rahoot/web/features/game/components/states/WaitTeamName"
+
+import { STATUS } from "@rahoot/common/types/game/status"
+import Circle from "@rahoot/web/features/game/components/icons/Circle"
+import Rhombus from "@rahoot/web/features/game/components/icons/Rhombus"
+import Square from "@rahoot/web/features/game/components/icons/Square"
+import Triangle from "@rahoot/web/features/game/components/icons/Triangle"
+
+export const ANSWERS_COLORS = [
+  "bg-red-500",
+  "bg-blue-500",
+  "bg-yellow-500",
+  "bg-green-500",
+]
+
+export const ANSWERS_ICONS = [Triangle, Rhombus, Circle, Square]
+
+export const GAME_STATES = {
+  status: {
+    name: STATUS.WAIT,
+    data: { text: "Waiting for the players" },
   },
-  PLAYER: {
-    SUCCESS_RECONNECT: "player:successReconnect",
-    UPDATE_LEADERBOARD: "player:updateLeaderboard",
-    JOIN: "player:join",
-    LOGIN: "player:login",
-    RECONNECT: "player:reconnect",
-    SELECTED_ANSWER: "player:selectedAnswer",
+  question: {
+    current: 1,
+    total: null,
   },
-  MANAGER: {
-    SUCCESS_RECONNECT: "manager:successReconnect",
-    CONFIG: "manager:config",
-    GAME_CREATED: "manager:gameCreated",
-    STATUS_UPDATE: "manager:statusUpdate",
-    NEW_PLAYER: "manager:newPlayer",
-    REMOVE_PLAYER: "manager:removePlayer",
-    ERROR_MESSAGE: "manager:errorMessage",
-    PLAYER_KICKED: "manager:playerKicked",
-    AUTH: "manager:auth",
-    RECONNECT: "manager:reconnect",
-    KICK_PLAYER: "manager:kickPlayer",
-    START_GAME: "manager:startGame",
-    ABORT_QUIZ: "manager:abortQuiz",
-    NEXT_QUESTION: "manager:nextQuestion",
-    SHOW_LEADERBOARD: "manager:showLeaderboard",
-    GET_CONFIG: "manager:getConfig",
-    LOGOUT: "manager:logout",
-    UNAUTHORIZED: "manager:unauthorized",
-    STOP_GAME: "manager:stopGame",       // O'yinni to'xtatish (YANGI)
+}
+
+export const GAME_STATE_COMPONENTS = {
+  [STATUS.SELECT_ANSWER]: Answers,
+  [STATUS.SHOW_QUESTION]: Question,
+  [STATUS.WAIT]: Wait,
+  [STATUS.SHOW_START]: Start,
+  [STATUS.SHOW_RESULT]: Result,
+  [STATUS.SHOW_PREPARED]: Prepared,
+  [STATUS.FINISHED]: PlayerFinished,
+  [STATUS.SET_TEAM_NAME]: SetTeamName,
+  [STATUS.WAIT_TEAM_NAME]: WaitTeamName,
+}
+
+export const GAME_STATE_COMPONENTS_MANAGER = {
+  ...GAME_STATE_COMPONENTS,
+  [STATUS.SHOW_ROOM]: Room,
+  [STATUS.SHOW_RESPONSES]: Responses,
+  [STATUS.SHOW_LEADERBOARD]: Leaderboard,
+  [STATUS.FINISHED]: Podium,
+}
+
+export const SFX = {
+  ANSWERS: {
+    MUSIC: "/sounds/answersMusic.mp3",
+    SOUND: "/sounds/answersSound.mp3",
   },
-  QUIZZ: {
-    GET: "quizz:get",
-    DATA: "quizz:data",
-    SAVE: "quizz:save",
-    SAVE_SUCCESS: "quizz:saveSuccess",
-    UPDATE: "quizz:update",
-    UPDATE_SUCCESS: "quizz:updateSuccess",
-    DELETE: "quizz:delete",
-    ERROR: "quizz:error",
+  PODIUM: {
+    THREE: "/sounds/three.mp3",
+    SECOND: "/sounds/second.mp3",
+    FIRST: "/sounds/first.mp3",
+    SNEAR_ROOL: "/sounds/snearRoll.mp3",
   },
-  RESULTS: {
-    GET: "results:get",
-    DATA: "results:data",
-    DELETE: "results:delete",
-  },
-  // Jamoa hodisalari (YANGI)
-  TEAM: {
-    ASSIGNED: "team:assigned",           // O'yinchiga jamoa tayinlandi
-    SET_NAME: "team:setName",            // Sardor jamoa nomini qo'yadi
-    NAME_SET: "team:nameSet",            // Jamoa nomi tasdiqlandi
-    LEADERBOARD: "team:leaderboard",     // Jamoa reytingi
-  },
-  // Jamoa chati (YANGI)
-  CHAT: {
-    SEND: "chat:send",                   // Xabar yuborish
-    MESSAGE: "chat:message",             // Xabar olish
-  },
+  RESULTS_SOUND: "/sounds/results.mp3",
+  SHOW_SOUND: "/sounds/show.mp3",
+  BOUMP_SOUND: "/sounds/boump.mp3",
 } as const
 
-export const MEDIA_TYPES = {
-  IMAGE: "image",
-  VIDEO: "video",
-  AUDIO: "audio",
-} as const
+export const MANAGER_SKIP_EVENTS = {
+  [STATUS.SHOW_ROOM]: EVENTS.MANAGER.START_GAME,
+  [STATUS.SELECT_ANSWER]: EVENTS.MANAGER.ABORT_QUIZ,
+  [STATUS.SHOW_RESPONSES]: EVENTS.MANAGER.SHOW_LEADERBOARD,
+  [STATUS.SHOW_LEADERBOARD]: EVENTS.MANAGER.NEXT_QUESTION,
+} as const satisfies Partial<
+  Record<keyof typeof GAME_STATE_COMPONENTS_MANAGER, string>
+>
 
-// O'yin rejimlari (YANGI)
-export const GAME_MODE = {
-  SOLO: "solo",
-  TEAM: "team",
-} as const
+export function isKeyOf<T extends object>(
+  obj: T,
+  key: string,
+): key is keyof T & string {
+  return key in obj
+}
 
-export const EXAMPLE_QUIZZ = {
-  subject: "Example Quizz",
-  questions: [
-    {
-      question: "What is good answer ?",
-      answers: ["No", "Good answer", "No", "No"],
-      solutions: [1],
-      cooldown: 5,
-      time: 15,
-    },
-    {
-      question: "What is good answer with image ?",
-      answers: ["No", "No", "No", "Good answer"],
-      media: {
-        type: MEDIA_TYPES.IMAGE,
-        url: "https://placehold.co/600x400.png",
-      },
-      solutions: [3],
-      cooldown: 5,
-      time: 20,
-    },
-  ],
-} as const
+export const MANAGER_SKIP_BTN = {
+  [STATUS.SHOW_ROOM]: "game:startGame",
+  [STATUS.SHOW_START]: null,
+  [STATUS.SHOW_PREPARED]: null,
+  [STATUS.SHOW_QUESTION]: null,
+  [STATUS.SELECT_ANSWER]: "common:skip",
+  [STATUS.SHOW_RESULT]: null,
+  [STATUS.SHOW_RESPONSES]: "common:next",
+  [STATUS.SHOW_LEADERBOARD]: "common:next",
+  [STATUS.FINISHED]: "common:exit",
+  [STATUS.WAIT]: null,
+  [STATUS.SET_TEAM_NAME]: null,
+  [STATUS.WAIT_TEAM_NAME]: null,
+}
